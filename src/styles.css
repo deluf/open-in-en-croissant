@@ -1,4 +1,4 @@
-.en-croissant-button {
+.en-croissant-button:not(.game-over-secondary-actions-row-component) {
     margin-top: 8px !important;
 }
 

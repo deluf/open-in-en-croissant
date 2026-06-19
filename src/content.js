@@ -3,8 +3,14 @@ function injectButton(container) {
         return;
     }
 
+    const isGameOverModal = container.matches('.game-over-modal-shell-buttons');
+
     const button = document.createElement('a');
-    button.className = 'cc-button-component cc-button-secondary cc-button-large cc-bg-secondary cc-button-full en-croissant-button';
+    let classNames = 'cc-button-component cc-button-secondary cc-button-large cc-bg-secondary en-croissant-button';
+    if (isGameOverModal) {
+        classNames += ' game-over-secondary-actions-row-component';
+    }
+    button.className = classNames;
 
     const updateHref = () => {
         button.href = `encroissant://import?url=${encodeURIComponent(window.location.href)}`;
@@ -19,39 +25,56 @@ function injectButton(container) {
     button.setAttribute('aria-label', 'Open in En Croissant');
     button.setAttribute('target', '_blank');
 
-    const iconSpan = document.createElement('span');
-    iconSpan.setAttribute('aria-hidden', 'true');
-    iconSpan.className = 'cc-icon-glyph cc-icon-size-32 cc-button-icon';
+    if (!isGameOverModal) {
+        const iconSpan = document.createElement('span');
+        iconSpan.setAttribute('aria-hidden', 'true');
+        iconSpan.className = 'cc-icon-glyph cc-icon-size-32 cc-button-icon';
 
-    const iconImg = document.createElement('img');
-    iconImg.className = 'en-croissant-img-icon';
-    iconImg.alt = '';
-    iconImg.src = chrome.runtime.getURL('images/icon_48.png');
+        const iconImg = document.createElement('img');
+        iconImg.className = 'en-croissant-img-icon';
+        iconImg.alt = '';
+        iconImg.src = chrome.runtime.getURL('images/icon_48.png');
 
-    iconSpan.appendChild(iconImg);
+        iconSpan.appendChild(iconImg);
+        button.appendChild(iconSpan);
+    }
 
     const textSpan = document.createElement('span');
     textSpan.className = 'cc-button-one-line';
     textSpan.textContent = 'Open in En Croissant';
 
-    button.appendChild(iconSpan);
     button.appendChild(textSpan);
 
-    container.appendChild(button);
+    if (isGameOverModal) {
+        if (container.children.length > 0) {
+            container.insertBefore(button, container.children[0].nextSibling);
+        } else {
+            container.appendChild(button);
+        }
+    } else {
+        container.appendChild(button);
+    }
 }
 
-// Observe the DOM to inject the button as soon as the target container is rendered
 function init() {
-    const container = document.querySelector('.game-review-buttons-component');
-    if (container) {
-        injectButton(container);
-    }
+    const selectors = [
+        '.game-review-buttons-component', // The right sidebar with the list of moves
+        '.game-over-modal-shell-buttons'  // The form that pops-up after the game
+    ];
 
-    const observer = new MutationObserver((mutations) => {
-        const target = document.querySelector('.game-review-buttons-component');
-        if (target) {
-            injectButton(target);
-        }
+    const checkAndInject = () => {
+        selectors.forEach(selector => {
+            const containers = document.querySelectorAll(selector);
+            containers.forEach(container => {
+                injectButton(container);
+            });
+        });
+    };
+
+    checkAndInject();
+
+    const observer = new MutationObserver(() => {
+        checkAndInject();
     });
 
     observer.observe(document.body, {
