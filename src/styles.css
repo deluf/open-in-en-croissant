@@ -1,0 +1,9 @@
+.en-croissant-button {
+    margin-top: 8px !important;
+}
+
+.en-croissant-img-icon {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+}

@@ -1,0 +1,30 @@
+{
+    "manifest_version": 3,
+    "name": "Open in En Croissant",
+    "version": "1.0.0",
+    "description": "Adds a button to Chess.com that opens the current game in the En Croissant desktop app",
+    "icons": {
+		"16": "images/icon_16.png",
+		"32": "images/icon_32.png",
+		"48": "images/icon_48.png",
+		"128": "images/icon_128.png"
+	},
+    "content_scripts": [
+        {
+            "matches":  [ "*://*.chess.com/*" ],
+            "js":       [ "src/content.js" ],
+            "css":      [ "src/styles.css" ]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [ "images/icon_48.png" ],
+            "matches": [ "*://*.chess.com/*" ]
+        }
+    ],
+  	"browser_specific_settings": {
+		"gecko": {
+			"id": "open-in-en-croissant@deluf.github.io"
+		}
+	}
+}
